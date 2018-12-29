@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body>
+	 <div class="content-block">
+			<div class="row">
+				<div class="col-25" style=text-align:right>
+					<a href="" id="loginout"
+						class="button button-big button-fill button-danger" >注销</a>
+				</div>
+            </div>
+		</div>
+</body>
+
+<script type='text/javascript' src='../resources/js/common/commonutil.js' charset='utf-8'></script>
+<script>
+$('#loginout').click(
+			function () {
+				submitUrl = '/mall/login/logout'
+				$.ajax({
+					url: submitUrl,
+					type : 'GET',
+					
+					
+					
+					success : function(data) { // 请求成功后处理函数。
+						
+						if (data.success == true) {
+							$.toast('退出登录成功');
+							window.location.href="/mall/login/userlogin"
+						} else {// 后台异常处理
+							$.toast('失败'+data.errMsg);
+						}
+						//$('#captcha_img').click();
+						
+					}
+					
+					
+				});
+ });</script>
+</html>

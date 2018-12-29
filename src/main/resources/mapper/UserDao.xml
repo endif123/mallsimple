@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.UserDao" >
+
+	<!-- 查询所有的用户 -->
+	<select id="selectAllUser" resultType="entity.User">
+		SELECT
+		id,name,password,type,cost
+		FROM
+		user;
+		
+	</select>
+	
+	<!-- 查询某个用户 -->
+	<select id="selectUserById" resultType="entity.User" >
+		SELECT
+		id,name,password,type,cost
+		FROM
+		user
+		where
+		id = #{id}
+		order by
+		type
+		
+	</select>
+	
+	<!-- 插入一个用户 -->
+	<insert id="insertUser"  useGeneratedKeys="true" keyProperty="id"
+		keyColumn="id">
+		<!-- 具体的sql -->
+		INSERT INTO
+		user(id, name, password, type, cost)
+		
+		VALUES
+		(#{id},#{name},#{password},#{type},#{cost})
+	</insert>
+	
+	<!-- 更新一个用户 -->
+	<update id="updateUser" parameterType="entity.User">
+		update user
+		<set>
+			<if test="name != null">name=#{name},</if>
+			<if test="password != null">password=#{password},</if>
+			<if test="type != null">type=#{type},</if>
+			<if test="cost != null">cost=#{cost}</if>
+				</set>
+		where id=#{id}
+	</update>
+	
+	<!-- 删除一个用户 -->
+	<delete id="deleteUser">
+		<!-- 具体的sql -->
+		DELETE FROM
+		user
+		WHERE
+		id = #{id}
+	</delete>
+	
+</mapper>

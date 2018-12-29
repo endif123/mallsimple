@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.ProductDao" > 
+	<resultMap id="productMap" type="entity.Product">
+		<id column="product_id" property="productId" />
+		<result column="product_name" property="productName" jdbcType="VARCHAR" />
+    	<result column="price" property="price" jdbcType="REAL" />
+    	<result column="description" property="description" jdbcType="VARCHAR" />
+    	<result column="product_img" property="productImg" jdbcType="VARCHAR" />
+    	<result column="stock" property="stock" jdbcType="INTEGER" />
+    	<result column="u_id" property="uId" jdbcType="INTEGER" />
+    	<result column="cate_id" property="cateId" jdbcType="INTEGER" />
+    	
+    	<association property="user" column="id" javaType="entity.User">
+    		<id column="id" property="id" />
+    		<result column="name" property="name" />
+    	
+		</association>
+		
+		<association property="category" column="category_id" javaType="entity.Category">
+    		<id column="category_id" property="categoryId" />
+    		<result column="category_name" property="categoryName" />
+    	
+		</association>
+	</resultMap>
+	
+	<sql id="Base_Column_List" >
+    	product_id, product_name, price, description, stock, u_id, cate_id, product_img
+  	</sql>
+  	
+  	
+  	
+  	<select id="queryProductList" resultMap="productMap">
+		 select 
+    	    p.product_id,
+    	    p.product_name,
+    	    p.price,
+    	    p.description,
+    	    p.stock,
+    	    p.u_id,
+    	    p.cate_id,
+    	    p.product_img,
+    	    u.id,
+    	    u.name,
+    	    c.category_id,
+    	    c.category_name
+    	    
+    	from product p,
+    		user u,
+    		category c
+		<where>
+			<!-- 跳件的组合 -->
+			<!-- id -->
+			<if test="productCondition.productId!=null">
+				and p.product_id = #{productCondition.productId}
+			</if>
+			<!-- 种类 -->
+			<if
+				test="productCondition.category!=null
+				 and productCondition.category.categoryId!=null">
+				and p.cate_id = 
+				#{productCondition.category.categoryId}
+			</if>
+			<!-- 用户 -->
+			<if
+				test="productCondition.user!=null
+				 and productCondition.user.id!=null">
+				and p.u_id = 
+				#{productCondition.user.id}
+			</if>
+			<!-- 写like语句的时候 一般都会写成 like '% %' 在mybatis里面写就是应该是 like '%${name} %' 而不是 
+				'%#{name} %' ${name} 是不带单引号的，而#{name} 是带单引号的 -->
+			<if test="productCondition.productName!=null">
+				and product_name like '%${productCondition.productName}%'
+			</if>
+			and
+			p.u_id = u.id
+    		and
+    		p.cate_id = c.category_id
+			
+		</where>
+		
+		LIMIT #{rowIndex},#{pageSize};
+	</select>
+	
+	<select id="queryProductCount" resultType="int">
+		SELECT
+			count(1)
+		FROM
+		    product p,
+    		user u,
+    		category c
+    		
+    	<where>
+			<!-- 跳件的组合 -->
+			<!-- id -->
+			<if test="productCondition.productId!=null">
+				and p.product_id = #{productCondition.productId}
+			</if>
+			<!-- 种类 -->
+			<if
+				test="productCondition.category!=null
+				 and productCondition.category.categoryId!=null">
+				and p.cate_id = 
+				#{productCondition.category.categoryId}
+			</if>
+			<!-- 用户 -->
+			<if
+				test="productCondition.user!=null
+				 and productCondition.user.id!=null">
+				and p.u_id = 
+				#{productCondition.user.id}
+			</if>
+			<!-- 写like语句的时候 一般都会写成 like '% %' 在mybatis里面写就是应该是 like '%${name} %' 而不是 
+				'%#{name} %' ${name} 是不带单引号的，而#{name} 是带单引号的 -->
+			<if test="productCondition.productName!=null">
+				and product_name like '%${productCondition.productName}%'
+			</if>
+			and
+			p.u_id = u.id
+    		and
+    		p.cate_id = c.category_id
+			
+		</where>
+	
+	
+	</select>
+	
+	<select id="selectByPrimaryKey" resultMap="productMap" parameterType="java.lang.Integer" >
+   		 select 
+    	    p.product_id,
+    	    p.product_name,
+    	    p.price,
+    	    p.description,
+    	    p.stock,
+    	    p.u_id,
+    	    p.cate_id,
+    	    p.product_img,
+    	    u.id,
+    	    u.name,
+    	    c.category_id,
+    	    c.category_name
+    	    
+    	from product p,
+    	user u,
+    	category c
+    	where 
+    	p.u_id = u.id
+    	and
+    	p.cate_id = c.category_id
+    	and
+    	product_id = #{productId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByUId" resultMap="productMap" parameterType="java.lang.Integer" >
+   		 select 
+    	    p.product_id,
+    	    p.product_name,
+    	    p.price,
+    	    p.description,
+    	    p.stock,
+    	    p.u_id,
+    	    p.cate_id,
+    	    p.product_img,
+    	    u.id,
+    	    u.name,
+    	    c.category_id,
+    	    c.category_name
+    	    
+    	from product p,
+    	user u,
+    	category c
+    	where 
+    	p.u_id = u.id
+    	and
+    	p.cate_id = c.category_id
+    	and
+    	u_id = #{uId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByCategoryKey" resultMap="productMap" parameterType="java.lang.Integer" >
+   		 select 
+    	    p.product_id,
+    	    p.product_name,
+    	    p.price,
+    	    p.description,
+    	    p.stock,
+    	    p.u_id,
+    	    p.cate_id,
+    	    p.product_img,
+    	    u.id,
+    	    u.name,
+    	    c.category_id,
+    	    c.category_name
+    	    
+    	from product p,
+    	user u,
+    	category c
+    	where 
+    	p.u_id = u.id
+    	and
+    	p.cate_id = c.category_id
+    	and
+    	p.cate_id = #{categoryId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectAllProduct" resultMap="productMap" resultType="entity.Product" >
+   		 select 
+    	    p.product_id,
+    	    p.product_name,
+    	    p.price,
+    	    p.description,
+    	    p.stock,
+    	    p.u_id,
+    	    p.cate_id,
+    	    p.product_img,
+    	    u.id,
+    	    u.name,
+    	    c.category_id,
+    	    c.category_name
+    	    
+    	from product p,
+    	user u,
+    	category c
+    	where 
+    	p.u_id = u.id
+    	and
+    	p.cate_id = c.category_id
+    	
+  </select>
+  
+  <update id="updateProduct" parameterType="entity.Product" >
+    update product
+    	<set>
+			<if test="productName != null">product_name=#{productName},</if>
+			<if test="price != null">price=#{price},</if>
+			<if test="description != null">description=#{description},</if>
+			<if test="stock != null">stock=#{stock},</if>
+			<if test="uId != null">u_id=#{uId},</if>
+			
+			<if test="cateId != null">cate_id=#{cateId},</if>
+			<if test="productImg != null">product_img=#{productImg},</if>
+			
+		</set>
+    
+           
+      
+    where product_id = #{productId,jdbcType=INTEGER}
+    AND u_id=#{user.id}
+  </update>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from product
+    where product_id = #{productId,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="addProduct" parameterType="entity.Product" useGeneratedKeys="true" keyProperty="productId"
+		keyColumn="product_id">
+    insert into product ( product_name, price, 
+      description, stock, u_id, 
+      cate_id, product_img)
+    values ( #{productName,jdbcType=VARCHAR}, #{price,jdbcType=REAL}, 
+      #{description,jdbcType=VARCHAR}, #{stock,jdbcType=INTEGER}, #{uId,jdbcType=INTEGER}, 
+      #{cateId,jdbcType=INTEGER},#{productImg,jdbcType=VARCHAR})
+  </insert>
+  
+   <update id="updateProductStock" parameterType="entity.Product" >
+    update product
+    	<set>
+			
+			<if test="stock != null">stock=#{stock},</if>
+			
+		</set>
+    
+           
+      
+    where product_id = #{productId,jdbcType=INTEGER}
+    
+  </update>
+	
+	
+</mapper>
