@@ -3,11 +3,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * ÅäÖÃspringºÍjunitÕûºÏ£¬junitÆô¶¯Ê±¼ÓÔØspringIOCÈİÆ÷ spring-test,junit
+ * ï¿½ï¿½ï¿½ï¿½springï¿½ï¿½junitï¿½ï¿½ï¿½Ï£ï¿½junitï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½springIOCï¿½ï¿½ï¿½ï¿½ spring-test,junit
+ * æ‰€æœ‰çš„testç±»å¿…é¡»ç»§æ‰¿æ­¤ç±»ï¼Œä¸ç„¶ä¼šäº§ç”Ÿç©ºæŒ‡é’ˆnullPointerå¼‚å¸¸
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-//¸æËßjunit springÅäÖÃÎÄ¼ş
+//ï¿½ï¿½ï¿½ï¿½junit springï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 @ContextConfiguration({ "classpath:spring/spring-dao.xml",
 		"classpath:spring/spring-service.xml" })
 public class BaseTest {
