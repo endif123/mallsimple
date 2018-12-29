@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.OrderDao" > 
+	<resultMap id="orderMap" type="entity.Order">
+		<id column="order_id" property="orderId" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+    	<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    	<result column="order_create_date" property="orderCreateDate" jdbcType="TIMESTAMP" />
+    	<result column="order_pay_date" property="orderPayDate" jdbcType="TIMESTAMP" />
+    	<result column="number" property="number" jdbcType="INTEGER" />
+    	<result column="u_id" property="uId" jdbcType="INTEGER" />
+    	<result column="p_id" property="pId" jdbcType="INTEGER" />
+    	<result column="order_message" property="orderMessage" jdbcType="VARCHAR" />
+    	<result column="order_price" property="orderPrice" jdbcType="FLOAT" />
+    	
+    	<association property="user" column="id" javaType="entity.User">
+    		<id column="id" property="id" />
+    		<result column="name" property="name" />
+    	
+		</association>
+		
+		<association property="product" column="product_id" javaType="entity.Product">
+    		<id column="product_id" property="productId" />
+    		<result column="product_name" property="productName" />
+    		<result column="price" property="price" jdbcType="REAL" />
+    		<result column="stock" property="stock" jdbcType="INTEGER" />
+    		<result column="u_id" property="uId" jdbcType="INTEGER" />
+    		<result column="product_img" property="productImg" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	
+	
+	<select id="queryOrderList" resultMap="orderMap">
+		select 
+			o.order_id, 
+			o.address, 
+			o.mobile, 
+			o.order_create_date,
+			o.order_pay_date, 
+			o.number, 
+			o.u_id, 
+			o.p_id,
+			o.order_message,
+			o.order_price,
+			u.id,
+			u.name,
+			p.product_id,
+			p.product_name,
+			p.price,
+			p.stock,
+			p.product_img,
+			p.u_id as productUserId
+		from 
+		    product p,
+    		user u,
+    		order_table o
+    	<where>
+			<!-- 跳件的组合 -->
+			<!-- id -->
+			<if test="orderCondition.orderId!=null">
+				and o.order_id = #{orderCondition.orderId}
+			</if>
+			
+			<!-- 用户 -->
+			<if
+				test="orderCondition.user!=null
+				 and orderCondition.user.id!=null">
+				and o.u_id = 
+				#{orderCondition.user.id}
+			</if>
+			
+			and
+			o.u_id = u.id
+    		and
+    		o.p_id = p.product_id
+    		
+    		ORDER BY
+    		o.order_create_date DESC
+			
+		</where>
+		
+		LIMIT #{rowIndex},#{pageSize};
+			
+		
+	</select>
+	
+	<insert id="addOrder" parameterType="entity.Order" useGeneratedKeys="true" keyProperty="orderId"
+		keyColumn="order_id">
+    insert into order_table ( address, mobile, 
+      order_create_date, order_pay_date, number, 
+      u_id, p_id, order_message, 
+      order_price)
+    values (#{address,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{orderCreateDate,jdbcType=TIMESTAMP}, #{orderPayDate,jdbcType=TIMESTAMP}, #{number,jdbcType=INTEGER}, 
+      #{uId,jdbcType=INTEGER}, #{pId,jdbcType=INTEGER}, #{orderMessage,jdbcType=VARCHAR}, 
+      #{orderPrice,jdbcType=REAL})
+  </insert>
+  
+  <update id="modifyOrder" parameterType="entity.Order" >
+    update order_table
+    <set >
+      <if test="address != null" >            address = #{address,jdbcType=VARCHAR},      </if>
+      <if test="mobile != null" >             mobile = #{mobile,jdbcType=VARCHAR},        </if>
+      <if test="orderCreateDate != null" >    order_create_date = #{orderCreateDate,jdbcType=TIMESTAMP},      </if>
+      <if test="orderPayDate != null" >       order_pay_date = #{orderPayDate,jdbcType=TIMESTAMP},       </if>
+      <if test="number != null" >         	  number = #{number,jdbcType=INTEGER},       </if>
+      <if test="uId != null" >                u_id = #{uId,jdbcType=INTEGER},          </if>
+      <if test="pId != null" >                p_id = #{pId,jdbcType=INTEGER},          </if>
+      <if test="orderMessage != null" >       order_message = #{orderMessage,jdbcType=INTEGER},          </if>
+      <if test="orderPrice != null" >         order_price = #{orderPrice,jdbcType=FLOAT},          </if>
+    </set>
+    where order_id = #{orderId,jdbcType=INTEGER}
+    
+  </update>
+  
+  <select id="selectOrderByShopOwner" resultMap="orderMap">
+		select 
+			o.order_id, 
+			o.address, 
+			o.mobile, 
+			o.order_create_date,
+			o.order_pay_date, 
+			o.number, 
+			o.u_id, 
+			o.p_id,
+			o.order_message,
+			o.order_price,
+			u.id,
+			u.name,
+			p.product_id,
+			p.product_name,
+			p.price,
+			p.stock,
+			p.product_img,
+			p.u_id as productUserId
+		from 
+		    product p,
+    		user u,
+    		order_table o
+    	<where>
+			<!-- 跳件的组合 -->
+			<!-- id -->
+			<if test="orderId!=null">
+				o.order_id = #{orderId} AND
+			</if>
+				o.p_id=p.product_id
+	 		AND
+	 			u.id=p.u_id
+	 		AND
+	    		u.id=#{id}
+    		</where>
+    	ORDER BY
+    		o.order_create_date DESC
+		LIMIT #{rowIndex},#{pageSize};	
+		
+		
+		
+			
+		
+	</select>
+  
+	
+</mapper>
